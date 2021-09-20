@@ -1,1 +1,17 @@
 *.code-workspace
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.bbl
+*.bcf
+*.blg
+*.listing
+*.out
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.xdv
+*.png
+/_minted*/
+histograma*
