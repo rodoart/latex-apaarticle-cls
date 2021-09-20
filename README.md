@@ -25,19 +25,19 @@
     <img src="https://i.ibb.co/Jyp4td6/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Modern APA article template</h3>
+  <h3 align="center">Modern APA article template with IJupyter style code boxes</h3>
 
   <p align="center">
-    Created to perform JOIN tasks, spanish
+    Created for college assingmets, spanish
     <br />
     <a href="https://github.com/rodoart/repo_name"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/rodoart/repo_name">View Demo</a>
+    <a href="https://github.com/rodoart/latex-apaarticle-cls/blob/master/example.pdf">View Demo</a>
     ·
-    <a href="https://github.com/rodoart/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/rodoart/latex-apaarticle-cls/issues">Report Bug</a>
     ·
-    <a href="https://github.com/rodoart/repo_name/issues">Request Feature</a>
+    <a href="https://github.com/rodoart/latex-apaarticle-cls/issues">Request Feature</a>
   </p>
 </p>
 
@@ -76,16 +76,15 @@
 
 ![Product Name Screen Shot](https://i.ibb.co/31JtLb3/latex-apparticle-cls-1.png)
 
-Here's a blank template to get started:
-**To avoid retyping too much info. Do a search and replace with your text editor for the following:**
-`github_username`, `repo_name`, `twitter_handle`, `email`, `project_title`, `project_description`
+It is a format for compiling latex documents based on the article style. It has Biber references in APA style and also has boxes for Minted code for Python. 
 
 
 ### Built With
 
-* []()
-* []()
-* []()
+* [MikTex](https://miktex.org/)
+* [XeLaTex](https://es.overleaf.com/learn/latex/XeLaTeX)
+* [MakeIndex](https://ctan.org/pkg/makeindex)
+* [VSCode](https://code.visualstudio.com/)
 
 
 
@@ -96,22 +95,18 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+You need a Latex compiler that can run Xelatex+MakeIndex+Bibtex, and any Python version with the pygments library.
+
+
 
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/rodoart/latex-apaarticle-cls.git
    ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
+2. Open and edit `example.tex` with your latex compiler.
+
 
 
 
@@ -127,7 +122,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/rodoart/latex-apaarticle-cls/issues) for a list of proposed features (and known issues).
 
 
 
@@ -145,30 +140,20 @@ Contributions are what make the open source community such an amazing place to l
 
 
 <!-- LICENSE -->
+
+<!-- 
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
+ -->
 
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email
+Rodolfo Arturo González Trillo - rodoart gmail.com
 
 Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
-
-
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* []()
-* []()
-* []()
-
-
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
