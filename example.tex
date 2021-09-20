@@ -1,0 +1,323 @@
+\documentclass[12pt,twocolumn,a4paper]{apa_article}
+%------------------------------------------------------------------------------%
+% INFORMACIÓN DEL ARTÍCULO Y METADATOS                                         %
+%------------------------------------------------------------------------------%
+\author{González Trillo Rodolfo Arturo}
+\course{Aprendizaje automático}
+\activity{Clasificación con máquina de vectores de soporte y redes de neuronas}
+\assignment{2}
+\title{Clasificación con máquina de vectores de soporte y redes de neuronas}
+\keywords{ia, unir}
+\date{\today}
+%------------------------------------------------------------------------------%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%------------------------------------------------------------------------------%
+% Página de Título                                                             %
+%------------------------------------------------------------------------------%
+\twocolumn[
+  \begin{@twocolumnfalse}
+    \maketitle
+
+    \begin{abstract}
+        \noindent \textit{ 
+          Se emplearon los modelos de clasificación de máquina de vectores de soporte y redes neuronales, para la clasificación de los datos de \textcite{sharma2017} y predecir la categoría \texttt{price\_range}. El modelo mejor ajustado fue el de redes neuronales que alcanzó una calificación f1 de 0.91 y el otro fue de 0.87.
+        }
+    \end{abstract}
+    \vspace{-20pt}
+    \vspace{2\baselineskip}
+    \vspace{-5pt}
+    \noindent\rule{\textwidth}{2pt}\vspace{7pt}
+  \end{@twocolumnfalse}
+]
+%------------------------------------------------------------------------------%
+\indexed{section}{Introducción}
+%------------------------------------------------------------------------------%
+Los modelos de máquina de soporte de vectores son modelos de aprendizaje supervisado. Dado un conjunto de entrenamiento, con las categorías definidas,los algoritmo genera fronteras con distinta forma que maximizan la distancia entre las categorías en el híperespacio conformado por las variables de los datos. 
+
+Los modelos de clasificación de redes neuronales se basan el uso de neuronas, funciones matemáticas basadas en sus equivalentes biológicos. Estos modelos también son de aprendizaje supervisado y por lo tal requiere entrenamiento.
+
+En este trabajo vamos a probar estos dos modelos, con una base de datos de ventas de teléfonos celulares. Dadas las características de los modelos se intentará predecir a que categoría de precio pertenecen.
+
+
+
+%------------------------------------------------------------------------------%
+\indexed{section}{Bibliotecas}
+%------------------------------------------------------------------------------%
+Durante la elaboración de este proyecto se utilizó \textbf{Python 3} con las siguientes bibliotecas: 
+
+\begin{itemize}
+  \item \texttt{\textbf{Pandas}}: Manejo y limpieza de la base de datos.
+  \item \texttt{\textbf{Numpy}}: Uso de funciones para arreglos.
+  \item \texttt{\textbf{Sklearn}}: Ajuste y validación de modelos de máquinas de soporte de vectores y redes neuronales de clasificación.
+  \item \texttt{\textbf{Pyplot}}: Visualización de los datos.
+  \item \texttt{\textbf{Seaborn}}: Extensiones a la visualización de datos.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+\indexed{section}{Importar datos}
+%------------------------------------------------------------------------------%
+Los datos utilizados provienen de \textcite{sharma2017}. Es una tabla de datos acerca de características de los móviles y su precio. La tabla de de datos tiene 2000 entradas y 21 variables.
+
+\setcounter{ipythcntr}{1}
+\begin{ipynbin}
+df = pd.read_csv("data/train.csv")
+df.shape
+\end{ipynbin}
+
+\begin{ipynbout}
+(2000, 21)
+\end{ipynbout}
+
+%------------------------------------------------------------------------------%
+\indexed{section}{Estadística descriptiva}
+%------------------------------------------------------------------------------%
+Las variables son todas de tipo numérico, lo que a \textit{priori} hace creer que son todas variables de este tipo. Sin embargo, esto es falso, pues un análisis más profundo muestra que algunas de las variables son de hecho categóricas, pero han pasado ya por un proceso de discretización, se puede apreciar esto en \tabla{tab:estadisticos}. Las variables que tienen mínimo 0 y máximo 1 son variables categóricas que indican la presencia o no de un característica.
+
+\begin{ipynbin}
+df.dtypes
+\end{ipynbin}
+
+\begin{ipynbout}
+battery_power      int64
+blue               int64
+clock_speed      float64
+dual_sim           int64
+fc                 int64
+four_g             int64
+int_memory         int64
+m_dep            float64
+mobile_wt          int64
+n_cores            int64
+pc                 int64
+px_height          int64
+px_width           int64
+ram                int64
+sc_h               int64
+sc_w               int64
+talk_time          int64
+three_g            int64
+touch_screen       int64
+wifi               int64
+price_range        int64
+\end{ipynbout}
+
+
+\setcounter{ipythcntr}{4}
+\begin{ipynbincommented}[label={cod:describe}]{
+  \textit{Output} en \tabla{tab:estadisticos}.\\
+  No es idéntica a como está presentada en \texttt{act2.ipynb}, aquí ha sido reorganizada para mejorar su visibilidad.
+}
+stats = df.describe().round(0).astype(int)
+stats
+\end{ipynbincommented}
+
+\begin{table*}
+	\scriptsize\centering
+	\begin{threeparttable}
+		\caption{Estadísticos de las variables numéricas.}
+		\label{tab:estadisticos}
+		\begin{tabular}{lrrrrrrr}
+      \toprule
+      {} &  battery\_power &  blue &  clock\_speed &  dual\_sim &    fc &  four\_g &  int\_memory \\
+      \midrule
+      count &           2000 &  2000 &         2000 &      2000 &  2000 &    2000 &        2000 \\
+      mean  &           1239 &     0 &            2 &         1 &     4 &       1 &          32 \\
+      std   &            439 &     1 &            1 &         1 &     4 &       0 &          18 \\
+      min   &            501 &     0 &            0 &         0 &     0 &       0 &           2 \\
+      25\%   &            852 &     0 &            1 &         0 &     1 &       0 &          16 \\
+      50\%   &           1226 &     0 &            2 &         1 &     3 &       1 &          32 \\
+      75\%   &           1615 &     1 &            2 &         1 &     7 &       1 &          48 \\
+      max   &           1998 &     1 &            3 &         1 &    19 &       1 &          64 \\
+      \bottomrule
+      \toprule
+      {} &  m\_dep &  mobile\_wt &  n\_cores &    pc &  px\_height &  px\_width &   ram \\
+      \midrule
+      count &   2000 &       2000 &     2000 &  2000 &       2000 &      2000 &  2000 \\
+      mean  &      1 &        140 &        5 &    10 &        645 &      1252 &  2124 \\
+      std   &      0 &         35 &        2 &     6 &        444 &       432 &  1085 \\
+      min   &      0 &         80 &        1 &     0 &          0 &       500 &   256 \\
+      25\%   &      0 &        109 &        3 &     5 &        283 &       875 &  1208 \\
+      50\%   &      0 &        141 &        4 &    10 &        564 &      1247 &  2146 \\
+      75\%   &      1 &        170 &        7 &    15 &        947 &      1633 &  3064 \\
+      max   &      1 &        200 &        8 &    20 &       1960 &      1998 &  3998 \\
+      \bottomrule
+      \toprule
+      {} &  sc\_h &  sc\_w &  talk\_time &  three\_g &  touch\_screen &  wifi &  price\_range \\
+      \midrule
+      count &  2000 &  2000 &       2000 &     2000 &          2000 &  2000 &         2000 \\
+      mean  &    12 &     6 &         11 &        1 &             1 &     1 &            2 \\
+      std   &     4 &     4 &          5 &        0 &             1 &     1 &            1 \\
+      min   &     5 &     0 &          2 &        0 &             0 &     0 &            0 \\
+      25\%   &     9 &     2 &          6 &        1 &             0 &     0 &            1 \\
+      50\%   &    12 &     5 &         11 &        1 &             1 &     1 &            2 \\
+      75\%   &    16 &     9 &         16 &        1 &             1 &     1 &            2 \\
+      max   &    19 &    18 &         20 &        1 &             1 &     1 &            3 \\
+      \bottomrule
+    \end{tabular}
+		\begin{tablenotes}
+			\item {\textnormal{\small \textit{Output} del \codigo{cod:describe}.}}
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table*}
+
+De los datos estadísticos de las variables (\tabla{tab:estadisticos}) se destacan las siguientes observaciones:
+
+\begin{itemize}
+  \item \texttt{sc\_h} y \texttt{sc\_w}: Son el alto y el ancho de la pantalla en pulgadas.  Los valores van desde 0 —probablemente signifique sin pantalla— hasta $19^{\prime\prime}$ ¡Lo que significa que no todos los equipos son teléfonos celulares!, suponemos que también hay tabletas.
+  \item \texttt{dual\_sim}, \texttt{four\_g},\texttt{touch\_screen} y  \texttt{wifi}: Son todas variables categóricas (con valores 0 y 1). Los 2 últimos cuartiles están marcados con 1, lo que signifca que al menos el 50\% de los teléfonos posee estas características. 
+  \item  \texttt{three\_g}: La variable del dispositivo con conexión de este tipo. 75\% de los equipos tienen este tipo de conectividad. El hecho de que existan equipos sólo con 3g indica que hay equipos viejos en la tabla, pues los primeros moviles con 4G comenzaron a ser vendidos en 2009 \parencite{torstensson_2009}.
+  \item \texttt{blue}: Es si el equipo está equipado con \textit{bluetooth}. Al parecer en 2017 esto era algo raro, pues al menos 25\% cuentan con esta característica.
+  \item \texttt{px\_heigt} es el alto de la resolución de la pantalla. Hay pantallas que tienen 0 en este valor. No se sabe que representa ésto realmente, pero la hipótesis es que se trata de teléfonos con pantalla de cristal líquido numéricas. 
+\end{itemize}
+
+
+%------------------------------------------------------------------------------%
+\indexed{subsection}{Variables categóricas y numéricas}
+
+Mostramos las variables categóricas:
+
+\setcounter{ipythcntr}{6}
+\begin{ipynbin}
+mask = (stats.loc['min']==0) & (stats.loc['max']==1) & (df.dtypes=='int64')
+
+categorical = stats.columns[mask]
+categorical
+\end{ipynbin}
+
+\begin{ipynbout}
+Index(['blue', 'dual_sim', 'four_g', 'three_g', 'touch_screen', 'wifi'], dtype='object')
+\end{ipynbout}
+
+\noindent y las variables numéricas:
+
+\begin{ipynbin}
+numerical = stats.columns[mask==False]
+numerical
+\end{ipynbin}
+  
+\begin{ipynbout}
+Index(['battery_power', 'clock_speed', 'fc', 'int_memory', 'm_dep', 'mobile_wt', 'n_cores', 'pc', 'px_height', 'px_width', 'ram', 'sc_h', 'sc_w', 'talk_time', 'price_range'],
+ dtype='object')
+\end{ipynbout}
+
+%------------------------------------------------------------------------------%
+\indexed{subsection}{Tratamiento de datos faltantes}
+
+Verificamos si el arreglo tienen valores faltantes:
+\begin{ipynbin}
+df.isna().sum()
+\end{ipynbin}
+
+\begin{ipynbout}
+battery_power    0
+blue             0
+clock_speed      0
+dual_sim         0
+fc               0
+four_g           0
+int_memory       0
+m_dep            0
+mobile_wt        0
+n_cores          0
+pc               0
+px_height        0
+px_width         0
+ram              0
+sc_h             0
+sc_w             0
+talk_time        0
+three_g          0
+touch_screen     0
+wifi             0
+price_range      0
+dtype: int64
+\end{ipynbout}
+
+Como se puede apreciar, no hay ninguna variable con datos faltantes.
+
+%------------------------------------------------------------------------------%
+\indexed{subsection}{Escalado e histogramas}
+
+Ninguna de las distribuciones presenta forma de distribución normal (véase \figura{fig:histogramas}), por lo que se decidió no estandarizar las distribuciones sino escalar escalar los datos con el método \textit{minmax}, haciendo que los valores de todas las variables estén en el intervalo $[-1,1]$. De acuerdo a la documentación, \textcite{scikit_2020}, este procedimiento también es adecuado para los métodos de clasificación con  máquina de vectores de soporte y de redes neuronales.
+
+\begin{ipynbin}
+normalized_df = 2*(df-df.min())/(df.max()-df.min()) - 1
+\end{ipynbin}
+
+Los histogramas se grafican con:
+
+\setcounter{ipythcntr}{12}
+\begin{ipynbincommented}[label={cod:histogramas}]{
+  \textit{Output} en \figura{fig:histogramas}
+}
+for column in x:
+    ax = sns.displot(normalized_df, x = column, hue=y, multiple='stack')
+\end{ipynbincommented}
+
+De la \figura{fig:histogramas} se pueden realizar las siguientes observaciones sobre los histogramas.
+\begin{itemize}
+  \item \hyperref[fig:histpricerange]{\texttt{price\_range}}: Muestra que hay 4 categorías de precios, y que los datos están repartidos uniformemente entre ellas.
+  \item \hyperref[fig:histblue]{\texttt{blue}} y \hyperref[fig:histncores]{\texttt{n\_cores}}: Son representativas de la mayoría de las variables, distribuciones uniformes y los datos repartidos de forma equitativa en las categorías de los rangos de precio.
+  \item \hyperref[fig:histfc]{\texttt{fc}} y \hyperref[fig:histpxheight]{\texttt{px\_height}}: Se observa el otro grupo de variables con distribución con asimetría positiva.
+  \item \hyperref[fig:ram]{\texttt{ram}}: Es la única variable que parece tener buena separación de las categorías de precio a lo largo de su intervalo. Por esta razón, \texttt{ram} es la variable con más potencial para poder clasificar los datos.
+\end{itemize}
+
+\begin{figure*}
+  \centering
+  \captionsetup{width=0.9\textwidth}
+  \begin{subfigure}{0.85\columnwidth}
+    \centering
+    \includegraphics[width=0.85\columnwidth]{histograma_price_range.pdf}
+    \caption{\texttt{price\_range}}
+    \label{fig:histpricerange}
+  \end{subfigure}%
+  \begin{subfigure}{0.9\columnwidth}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{histograma_blue.pdf}
+    \caption{\texttt{blue}}
+    \label{fig:histblue}
+  \end{subfigure}
+
+  \begin{subfigure}{0.9\columnwidth}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{histograma_fc.pdf}
+    \caption{\texttt{fc}}
+    \label{fig:histfc}
+  \end{subfigure}%
+  \begin{subfigure}{0.9\columnwidth}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{histograma_ram.pdf}
+    \caption{\texttt{ram}}
+    \label{fig:ram}
+  \end{subfigure}%
+  
+  \begin{subfigure}{0.9\columnwidth}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{histograma_n_cores.pdf}
+    \caption{\texttt{n\_cores}}
+    \label{fig:histncores}
+  \end{subfigure}%
+  \begin{subfigure}{0.9\columnwidth}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{histograma_px_height.pdf}
+    \caption{\texttt{px\_height}}
+    \label{fig:histpxheight}
+  \end{subfigure}%
+  
+  \decoRule{0.9\textwidth}
+  \vspace{-10pt}
+  \caption[
+    Histogramas de algunas variables relevantes.
+  ]{%
+    Histogramas de algunas variables relevantes.
+  }%
+  \label{fig:histogramas}	
+\end{figure*}
+%\twocolumn[\begin{@twocolumnfalse}
+\addcontentsline{toc}{section}{Referencias}
+\printbibliography
+%\end{@twocolumnfalse}]
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
