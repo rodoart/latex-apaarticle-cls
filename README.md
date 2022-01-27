@@ -105,6 +105,8 @@ You need a Latex compiler that can run Xelatex+MakeIndex+Bibtex, and any Python 
    ```sh
    git clone https://github.com/rodoart/latex-apaarticle-cls.git
    ```
+2. Add your logo in the pictures folder as `logo.png`.
+
 2. Open and edit `example.tex` with your latex compiler.
 
 

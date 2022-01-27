@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ArticuloAPA                                                                  %
 % Class File                                                                   %
-% Version 1.5 (17/july/2021)                                                   %
+% Version 1.6 (17/january/2022)                                                %
 %                                                                              %
 % Authors:                                                                     %
 % Rodolfo Arturo González Trillo                                               %
@@ -88,6 +88,8 @@
 
 % Spacing
 \onehalfspacing
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
 
 \RequirePackage[left=1.3cm,right=1.3cm,top=2.3 cm,bottom=2.0cm]{geometry}
 
@@ -543,3 +545,24 @@
   },
   #1,
 }
+
+%------------------------------------------------------------------------------%
+%                                  QUOTE BOX                                   %
+%------------------------------------------------------------------------------%
+
+\newtcolorbox{quotebox}[1][]{
+  ipynbnobox,
+  enhanced,
+  top=0pt,
+  bottom=0pt,
+  left=0pt,
+  right=0pt,
+  enlarge left by=\inwd, 
+  enlarge right by=\inwd,
+  width=\linewidth-2\inwd,
+  borderline west={1pt}{0pt}{mydarkyellow},
+  before upper={\parskip0.913em},
+  fontupper=\itshape\small
+  #1,
+}
+
